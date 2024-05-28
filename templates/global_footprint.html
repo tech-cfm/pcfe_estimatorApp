@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <br>
+    <div class="flex-container">
+        <div class="card-header">
+            <h4>National Footprint and Biocapacity Accounts Data</h4>
+            {{ data_table|safe }}
+        </div>
+
+        <h4>Interactive Visualizations</h4>
+        <h5>Scatter Plot: Total Ecological Footprint (Consumption) vs Total Biocapacity</h5>
+        {{ scatter_plot|safe }}
+        
+        <h5>Bar Chart: Total Ecological Footprint (Consumption) by Country</h5>
+        {{ bar_plot|safe }}
+        
+        <h5>Map: Total Ecological Footprint (Consumption) by Country</h5>
+        {{ map_plot|safe }}
+        
+        <h4>Static Visualization</h4>
+        <h5>Total Ecological Footprint (Consumption) vs Total Biocapacity</h5>
+        <img src="data:image/png;base64,{{ static_plot }}" alt="Static Scatter Plot">
+    </div>
+{% endblock %}

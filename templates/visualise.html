@@ -1,0 +1,95 @@
+
+<!-- templates/visualise.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Data Visualisation:</h4>
+                    </div>
+						<div class="card-body">
+								<h5>Footprint History</h5>
+								<div id="footprint-history-chart"></div>
+								<h5>Home Energy</h5>
+								<div id="home-energy-chart"></div>
+								<h5>Transportation</h5>
+								<div id="transportation-chart"></div>
+								<h5>Food</h5>
+								<div id="food-chart"></div>
+								<script src="{% static 'js/plotly.min.js' %}"></script>
+								<script>
+									// Footprint History Chart
+									const timestamps = {{ timestamps|safe }};
+									const footprints = {{ footprints|safe }};
+									const footprintHistoryTrace = {
+										x: timestamps,
+										y: footprints,
+										type: 'scatter'
+									};
+									const footprintHistoryLayout = {
+										title: 'Footprint History',
+										xaxis: {title: 'Timestamp'},
+										yaxis: {title: 'Footprint (kg CO2e)'}
+									};
+									Plotly.newPlot('footprint-history-chart', [footprintHistoryTrace], footprintHistoryLayout);
+									// Home Energy Chart
+									const homeEnergyData = {{ home_energy_data|safe }};
+									const homeEnergyTrace = {
+										x: homeEnergyData.map(function (item) {
+											return item.label;
+										}),
+										y: homeEnergyData.map(function (item) {
+											return item.value;
+										}),
+										type: 'bar'
+									};
+									const homeEnergyLayout = {
+										title: 'Home Energy Emissions',
+										xaxis: {title: 'Category'},
+										yaxis: {title: 'Emissions (kg CO2e)'}
+									};
+									Plotly.newPlot('home-energy-chart', [homeEnergyTrace], homeEnergyLayout);
+									// Transportation Chart
+									const transportationData = {{ transportation_data|safe }};
+									const transportationTrace = {
+										labels: transportationData.map(function (item) {
+											return item.label;
+										}),
+										values: transportationData.map(function (item) {
+											return item.value;
+										}),
+										type: 'pie'
+									};
+									const transportationLayout = {
+										title: 'Transportation Emissions'
+									};
+									Plotly.newPlot('transportation-chart', [transportationTrace], transportationLayout);
+									// Food Chart
+									const foodData = {{ food_data|safe }};
+									const foodTrace = {
+										x: foodData.map(function (item) {
+											return item.label;
+										}),
+										y: foodData.map(function (item) {
+											return item.value;
+										}),
+										type: 'bar'
+									};
+									const foodLayout = {
+										title: 'Food Emissions',
+										xaxis: {title: 'Category'},
+										yaxis: {title: 'Emissions (kg CO2e)'}
+									};
+									Plotly.newPlot('food-chart', [foodTrace], foodLayout);
+								</script>
+						</div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+{% endblock %}

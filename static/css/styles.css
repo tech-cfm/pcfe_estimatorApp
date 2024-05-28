@@ -14,3 +14,14 @@ body {
 footer {
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.navbar-brand img {
+    height: 30px;
+    margin-right: 10px;
+}
+
+/* card body widening */
+.custom-card-body {
+    width: 90%; /* Adjust the width as per your requirement */
+    margin: 0 auto; /* Center the card-body horizontally */
+}

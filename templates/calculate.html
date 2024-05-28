@@ -1,10 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- calculate.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Calculate Your Carbon Footprint</h4>
+                    </div>
+                        <div class="card-body">
+
+                            <form method="post">
+                                {% csrf_token %}
+                                <h5>Home Energy</h5>
+                                <div class="form-group">
+                                    <label for="electricity_usage">Electricity Usage (kWh):</label>
+                                    <input type="number" class="form-control" id="electricity_usage" step="0.01" name="electricity_usage"
+                                           required>
+                                    <small class="form-text text-muted">Emission
+                                        factor: {{ home_energy_emissions_factors.Electricity }} kg CO2e per kWh</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gas_usage">Main Gas Usage (kWh):</label>
+                                    <input type="number" class="form-control" id="gas_usage" step="0.01" name="gas_usage" required>
+                                    <small class="form-text text-muted">Emission
+                                        factor: {{ home_energy_emissions_factors.Main_Gas }} kg CO2e per kWh</small>
+                                </div>
+
+                                <h5>Transportation</h5>
+                                <div class="form-group">
+                                    <label for="petrol_car_distance">Petrol Car Distance (km):</label>
+                                    <input type="number" class="form-control" id="petrol_car_distance" step="0.01"
+                                           name="petrol_car_distance" required>
+                                    <small class="form-text text-muted">Emission
+                                        factor: {{ transportation_emissions_factors.petrol_car }} kg CO2e per litre</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="diesel_car_distance">Diesel Car Distance (km):</label>
+                                    <input type="number" class="form-control" id="diesel_car_distance" step="0.01"
+                                           name="diesel_car_distance" required>
+                                    <small class="form-text text-muted">Emission
+                                        factor: {{ transportation_emissions_factors.diesel_car }} kg CO2e per litre</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lpg_car_distance">LPG Car Distance (km):</label>
+                                    <input type="number" class="form-control" id="lpg_car_distance" step="0.01" name="lpg_car_distance"
+                                           required>
+                                    <small class="form-text text-muted">Emission
+                                        factor: {{ transportation_emissions_factors.LPG_car }} kg CO2e per litre</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bus_distance">Bus Distance (km):</label>
+                                    <input type="number" class="form-control" id="bus_distance" step="0.01" name="bus_distance" required>
+                                    <small class="form-text text-muted">Emission
+                                        factor: {{ transportation_emissions_factors.Bus }} kg CO2e per passenger-km</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="national_rail_distance">National Rail Distance (km):</label>
+                                    <input type="number" class="form-control" id="national_rail_distance" step="0.01"
+                                           name="national_rail_distance" required>
+                                    <small class="form-text text-muted">Emission
+                                        factor: {{ transportation_emissions_factors.National_rail }} kg CO2e per
+                                        passenger-km</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="domestic_flight_distance">Domestic Flight Distance (km):</label>
+                                    <input type="number" class="form-control" id="domestic_flight_distance" step="0.01"
+                                           name="domestic_flight_distance" required>
+                                    <small class="form-text text-muted">Emission
+                                        factor: {{ transportation_emissions_factors.domestic_flight }} kg CO2e per
+                                        passenger-km</small>
+                                </div>
+
+                                <h5>Food Consumption</h5>
+                                <div class="form-group">
+                                    <label for="beef_consumption">Beef Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="beef_consumption" step="0.01" name="beef_consumption"
+                                           required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Beef }} kg
+                                        CO2e per kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lamb_consumption">Lamb Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="lamb_consumption" step="0.01" name="lamb_consumption"
+                                           required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Lamb }} kg
+                                        CO2e per kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pork_consumption">Pork Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="pork_consumption" step="0.01" name="pork_consumption"
+                                           required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Pork }} kg
+                                        CO2e per kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="poultry_consumption">Poultry Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="poultry_consumption" step="0.01"
+                                           name="poultry_consumption" required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Poultry }} kg
+                                        CO2e per kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fish_consumption">Fish (Farmed) Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="fish_consumption" step="0.01" name="fish_consumption"
+                                           required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Fish }} kg
+                                        CO2e per kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="eggs_consumption">Eggs Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="eggs_consumption" step="0.01" name="eggs_consumption"
+                                           required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Eggs }} kg
+                                        CO2e per kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dairy_consumption">Dairy (Milk, Cheese, Yoghurt) Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="dairy_consumption" step="0.01" name="dairy_consumption"
+                                           required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Dairy }} kg
+                                        CO2e per kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vegetables_fruits_consumption">Vegetables and Fruits Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="vegetables_fruits_consumption" step="0.01"
+                                           name="vegetables_fruits_consumption" required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Vegetables }}
+                                        kg CO2e per kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cereals_consumption">Cereals (Wheat, Rice, etc.) Consumption (kg):</label>
+                                    <input type="number" class="form-control" id="cereals_consumption" step="0.01"
+                                           name="cereals_consumption" required>
+                                    <small class="form-text text-muted">Emission factor: {{ food_emission_factors.Cereals }} kg
+                                        CO2e per kg</small>
+                                </div>
+                                <br>
+                                <button type="submit" class="btn btn-primary">Calculate</button>
+                            </form>
+                        </div>    
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

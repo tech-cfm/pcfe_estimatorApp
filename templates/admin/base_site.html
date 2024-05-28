@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'admin/base.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block branding %}
+    <h1 id="head">
+        <img src="{% static 'images/logo.jpg' %}" alt="PCFE App" height="50"
+             width="80" class="brand_img"> PCFE Admin Area
+    </h1>
+{% endblock %}

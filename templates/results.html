@@ -1,10 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- result.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Carbon Footprint Result</h4>
+                    </div>
+                        <div class="card-body">
+                            <p>Your total carbon footprint is: {{ footprint }} tonnes CO2e</p>
+                            <p>Your carbon footprint category is: <strong>{{ category }}</strong></p>
+                            <p>
+                                {% if category == 'Low' %}
+                                    Great job! Your carbon footprint is relatively low.
+                                {% elif category == 'Moderate' %}
+                                    Your carbon footprint is moderate. Consider taking steps to reduce your emissions.
+                                {% elif category == 'High' %}
+                                    Your carbon footprint is high. It's recommended to take action to reduce your emissions.
+                                {% else %}
+                                    Your carbon footprint is very high. You should take immediate action to reduce your emissions.
+                                {% endif %}
+                            </p>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

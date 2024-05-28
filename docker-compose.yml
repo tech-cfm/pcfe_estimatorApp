@@ -1,0 +1,41 @@
+version: '5.5'
+
+services:
+  web: # Web Container
+    build: .
+    restart: always
+    container_name: webApp
+    command: > # Create a database when the container is launched
+      bash -c "python manage.py makemigrations
+      && python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000"
+    ports: # Use port # 10555 to avoid any conflict with the local port number
+      - "10555:8000"
+
+    volumes:
+      - .:/pcfeApp
+
+    depends_on: # This indicates that the webApp needs to access the db to run
+      - pgdb
+
+  pgdb: # Postgresql db server container
+    container_name: pcfeDBServer
+    image: postgres:latest
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - "5432:5432"
+    environment: # Accessing .env values
+      - POSTGRES_USER=${POSTSQL_USER}
+      - POSTGRES_PASSWORD=${POSTSQL_PASSWORD}
+      - POSTGRES_DB=${POSTSQL_DB}
+
+    volumes: # This stores all the webApp data even when the container is knock down
+      - pgdata:/var/lib/postgress/data
+
+
+volumes:
+  pgdata:
+
+

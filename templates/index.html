@@ -2,16 +2,41 @@
 
 {% block content %}
   {% if user.is_authenticated %}
-    <h1>Welcome, {{ user.username }}!</h1>
-    {% if latest_footprint %}
-      <p>Your latest carbon footprint: {{ latest_footprint }} kg CO2e</p>
-    {% else %}
-      <p>You have no carbon footprint history.</p>
-    {% endif %}
-    <a href="{% url 'calculate' %}">Calculate Carbon Footprint</a>
+      <div class="flex-container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Welcome, {{ user.first_name }}!</h4>
+                    </div>
+                        <div class="card-body">
+                            {% if latest_footprint %}
+                              <p>Your latest carbon footprint: {{ latest_footprint }} tonnes CO2e</p>
+                            {% else %}
+                              <p>You have no carbon footprint history.</p>
+                            {% endif %}
+                            <a href="{% url 'calculate' %}">Calculate Carbon Footprint</a>
+                        </div>
+                </div>
+            </div>
+        </div>
+      </div>
   {% else %}
-    <h1>Welcome to the Personal Carbon Footprint Estimator</h1>
-    <a href="{% url 'signup' %}">Sign Up</a>
-    <a href="{% url 'login' %}">Log In</a>
+      <div class="flex-container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Welcome to the Personal Carbon Footprint Estimator.</h4>
+                    </div>
+                    <div class="card-body">
+                        <a href="{% url 'signup' %}">Sign Up Here:</a>
+                          <br>
+                        <a href="{% url 'login' %}">Log In</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
   {% endif %}
 {% endblock %}
