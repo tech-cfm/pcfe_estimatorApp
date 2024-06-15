@@ -1,5 +1,44 @@
-venv/
-.env
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
 db.sqlite3
-.DS_Store
-__pycache__
+db.sqlite3-journal
+media/
+
+# Environment files
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Docker
+.docker/
+*.env.*
+
+# IDE
+.idea/
+.vscode/
+
+# Static files
+static/
+
+# Migrations
+migrations/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# PostgreSQL data
+data/
+
+# Other
+*.DS_Store

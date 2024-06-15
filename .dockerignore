@@ -1,4 +1,45 @@
 Dockerfile-development
+# Git files
+.git
+.gitignore
+
+# Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+
+# Environment files
+.env
+.venv
+env/
+
+# Database files
+*.sqlite3
+*.postgres
+
+# Media and static files
+/media/
+/static/
+
+# Log files
+*.log
+
+# Artifacts and build files
+build/
+dist/
+*.egg
+*.manifest
+*.spec
+
+# Documentation
+docs/
+README.md
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
 **/__pycache__
 **/db.sqlite3
-.env

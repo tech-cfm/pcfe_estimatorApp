@@ -1,0 +1,61 @@
+
+
+services:
+  django_gunicorn:
+    build: .
+    env_file:
+      - .env
+    restart: always
+    container_name: djan-gunicorn
+    command: >
+      bash -c "python manage.py collectstatic --noinput &&
+               python manage.py makemigrations &&
+               python manage.py migrate &&
+               gunicorn --bind 0.0.0.0:8000 CorePCFE.wsgi:application"
+    volumes:
+      - .:/pcfeApp
+    depends_on:
+      - db
+    networks:
+      - pcfe-network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile.nginx
+
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - django_gunicorn
+    networks:
+      - pcfe-network
+
+  db:
+    container_name: pcfe-db
+    image: postgres:latest
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTSQL_USER}
+      - POSTGRES_PASSWORD=${POSTSQL_PASSWORD}
+      - POSTGRES_DB=${POSTSQL_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - pcfe-network
+
+volumes:
+  pgdata:
+
+networks:
+  pcfe-network:
+    driver: bridge
