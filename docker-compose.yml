@@ -1,41 +1,61 @@
-version: '5.5'
+
 
 services:
-  web: # Web Container
+  django_gunicorn:
     build: .
+    env_file:
+      - .env
     restart: always
-    container_name: webApp
-    command: > # Create a database when the container is launched
-      bash -c "python manage.py makemigrations
-      && python manage.py migrate
-      && python manage.py runserver 0.0.0.0:8000"
-    ports: # Use port # 10555 to avoid any conflict with the local port number
-      - "10555:8000"
-
+    container_name: djan-gunicorn
+    command: >
+      bash -c "python manage.py collectstatic --noinput &&
+               python manage.py makemigrations &&
+               python manage.py migrate &&
+               gunicorn --bind 0.0.0.0:8000 CorePCFE.wsgi:application"
     volumes:
       - .:/pcfeApp
+    depends_on:
+      - db
+    networks:
+      - pcfe-network
 
-    depends_on: # This indicates that the webApp needs to access the db to run
-      - pgdb
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile.nginx
 
-  pgdb: # Postgresql db server container
-    container_name: pcfeDBServer
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - django_gunicorn
+    networks:
+      - pcfe-network
+
+  db:
+    container_name: pcfe-db
     image: postgres:latest
     env_file:
       - .env
     restart: always
     ports:
       - "5432:5432"
-    environment: # Accessing .env values
+    environment:
       - POSTGRES_USER=${POSTSQL_USER}
       - POSTGRES_PASSWORD=${POSTSQL_PASSWORD}
       - POSTGRES_DB=${POSTSQL_DB}
-
-    volumes: # This stores all the webApp data even when the container is knock down
-      - pgdata:/var/lib/postgress/data
-
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - pcfe-network
 
 volumes:
   pgdata:
 
-
+networks:
+  pcfe-network:
+    driver: bridge
