@@ -25,8 +25,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project
 COPY . /usr/src/app/
-# Ensure the entrypoint script is executable
-RUN chmod +x entrypoint.sh
+# Copy the entrypoint.sh script and make it executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Change to the non-root user
 USER django
@@ -36,4 +37,4 @@ EXPOSE ${PORT}
 # ENV NAME World
 
 # Run entrypoint script
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["sh", "/usr/src/app/entrypoint.sh"]

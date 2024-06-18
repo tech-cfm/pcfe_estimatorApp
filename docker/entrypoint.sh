@@ -12,4 +12,4 @@ python manage.py collectstatic --noinput
 
 # Start uWSGI
 echo "Starting uWSGI..."
-uwsgi --ini /usr/src/app/docker/uwsgi.ini
+uwsgi --ini /usr/src/app/uwsgi.ini
