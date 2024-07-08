@@ -16,5 +16,5 @@ urlpatterns = [
     path('calculate/', views.calculate_view, name='calculate'),
     path('visualise/', views.data_visualisation, name='visualise'),
     path('global-footprint/', views.get_global_footprint_data, name='global_footprint'),
-    # path('results/', views.calculate_view, name='logout'),
+    
 ]
