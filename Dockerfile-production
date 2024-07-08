@@ -1,0 +1,60 @@
+# Use the official Python image as the base image
+FROM python:3.12.3-alpine
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV PGPASSWORD ${POSTGRES_PASSWORD}
+# Add the scripts directory to the PATH of the running container
+ENV PATH="/scripts:${PATH}"
+# Install system dependencies
+COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN apk add --update --no-chache --virtual .tmp gcc libc-dev linux-headers postgresql-dev
+# Upgrade pip
+RUN pip install --upgrade pip
+# Install dependencies
+RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
+#
+RUN apk del .tmp
+# Create a new directory in the root of the dockerfile
+RUN mkdir /usr/src/app
+# copy the contents of the Django project into the new directory
+COPY . /CorePCFE /usr/src/app
+# Set the working directory to the new directory
+WORKDIR /usr/src/app
+# copy scripts to the /scripts directory
+COPY ./scripts /scripts
+# Make the scripts executable
+RUN chmod +x /scripts/*
+# Create media and static directories
+RUN mkdir -p /usr/src/app/static
+RUN mkdir -p /usr/src/app/media
+RUN mkdir -p /usr/src/app/staticfiles
+RUN mkkdir -p /var/lib/postgresql/data/
+# Create a non-root user
+RUN  adduser -D user
+#
+RUN chown -R user:user /usr/src/app
+RUN chown -R user:user /var/lib/postgresql/data/
+# Give full access to the user whiles others have read access
+RUN chmod -R 755 /usr/src/app
+RUN  chmod -R 755 /var/lib/postgresql/data/
+# Switch to the non-root user
+USER user
+# Copy the entrypoint.sh script and make it executable
+# COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+
+# Making the entrypoint.sh script executable
+# # # RUN chmod +x entrypoint.sh
+
+# Create a non-root user
+# RUN useradd -m osomafo7 -s /bin/bash
+
+# Switch to non-root user
+# USER osomafo7
+
+# Expose the port uWSGI will run on
+EXPOSE ${PORT}
+
+# Run entrypoint script
+ENTRYPOINT ["entrypoint.sh"]

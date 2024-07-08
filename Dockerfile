@@ -6,35 +6,36 @@ FROM python:3.12.3-slim
 ENV PYTHONDONTWRITEBYTECODE 1
 # Stops unbuffering
 ENV PYTHONUNBUFFERED 1
-# Create a non-root user
-RUN addgroup --system django && adduser --system --group django
 
-# Set work directory/create a new work directory called app
-# Create and set the working directory
-WORKDIR /usr/src/app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt /usr/src/app/
+# Set the working directory in the container
+WORKDIR /pcfeApp
+# COPY Pipfile Pipfile.lock /pcfeApp/
+# Installing the .env file at the system level
+# RUN pip install pipenv && pipenv install --system
+# Docker itself is like a VM - so need to create a virtual environment
+# Install dependencies
+COPY requirements.txt /pcfeApp/
 RUN pip install --upgrade pip
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
-COPY . /usr/src/app/
-# Copy the entrypoint.sh script and make it executable
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+# Copy the entire Django project code into the container
+COPY . /pcfeApp/
 
-# Change to the non-root user
-USER django
-# Expose the port uWSGI will run on
-EXPOSE ${PORT}
-# Define environment variable
-# ENV NAME World
+# Collect static files
+RUN python manage.py collectstatic --no-input
 
-# Run entrypoint script
-ENTRYPOINT ["sh", "/usr/src/app/entrypoint.sh"]
+# Change ownership of static files
+RUN addgroup --system proxy && adduser --system --no-create-home --group proxy
+
+# Set static files permissions
+RUN chown -R proxy:proxy /pcfeApp/static/
+
+# Expose port 8000 to the outside world
+EXPOSE 8000
+
+# Run the Django development server
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# Set the command to start Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "CorePCFE.wsgi:application"]

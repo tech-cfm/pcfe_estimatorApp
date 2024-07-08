@@ -1,19 +1,40 @@
 
+
 services:
-  web-uwsgi:
-    container_name: web-uwsgi
+  django_gunicorn:
     build: .
-    command: uwsgi --ini uwsgi.ini
-    volumes:
-      - .:/usr/src/app
-      - static_volume:/usr/src/app/static
-      - media_volume:/usr/src/app/media
-    ports:
-      - "8000:8000"
     env_file:
       - .env
+    restart: always
+    container_name: djan-gunicorn
+    command: >
+      bash -c "python manage.py collectstatic --noinput &&
+               python manage.py makemigrations &&
+               python manage.py migrate &&
+               gunicorn --bind 0.0.0.0:8000 CorePCFE.wsgi:application"
+    volumes:
+      - .:/pcfeApp
     depends_on:
       - db
+    networks:
+      - pcfe-network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: proxy/Dockerfile
+
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy.conf:/etc/proxy/proxy.conf
+      - ./default.conf:/etc/proxy/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - django_gunicorn
+    networks:
+      - pcfe-network
 
   db:
     container_name: pcfe-db
@@ -24,26 +45,17 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=${POSTSQL_USER}
-      - POSTGRES_PASSWORD=${POSTSQL_PASSWORD}
-      - POSTGRES_DB=${POSTSQL_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
-
-  nginx:
-    image: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - static_volume:/usr/src/app/static
-      - media_volume:/usr/src/app/media
-      - /etc/letsencrypt:/etc/letsencrypt
-    depends_on:
-      - web-uwsgi
+    networks:
+      - pcfe-network
 
 volumes:
   pgdata:
-  static_volume:
-  media_volume:
+
+networks:
+  pcfe-network:
+    driver: bridge
